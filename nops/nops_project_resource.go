@@ -258,13 +258,13 @@ func (r *projectResource) ImportState(ctx context.Context, req resource.ImportSt
 // Update updates the resource and sets the updated Terraform state on success.
 func (r *projectResource) Update(ctx context.Context, req resource.UpdateRequest, resp *resource.UpdateResponse) {
 	var plan ProjectModel
-	var currentState ProjectModel
+	var state ProjectModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
-	getStateDiags := req.State.Get(ctx, &currentState)
+	getStateDiags := req.State.Get(ctx, &state)
 	resp.Diagnostics.Append(getStateDiags...)
 	if resp.Diagnostics.HasError() {
 		return
@@ -276,7 +276,7 @@ func (r *projectResource) Update(ctx context.Context, req resource.UpdateRequest
 	updateProjectRequest.Name = plan.Name.ValueString()
 	updateProjectRequest.AccountNumber = plan.AccountNumber.ValueString()
 
-	project, err := r.client.UpdateProject(currentState.ID.ValueInt64(), updateProjectRequest)
+	project, err := r.client.UpdateProject(state.ID.ValueInt64(), updateProjectRequest)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error updating project",
@@ -288,14 +288,14 @@ func (r *projectResource) Update(ctx context.Context, req resource.UpdateRequest
 	// Set values to updated fields in nOps
 	ctx = tflog.SetField(ctx, "project_update", project)
 	tflog.Debug(ctx, fmt.Sprintf("Updated project data for project id %d, account number %s and name %s", project.ID, project.AccountNumber, project.Name))
-	plan.ID = types.Int64Value(int64(project.ID))
+	plan.ID = state.ID
 	plan.Name = types.StringValue(project.Name)
 	plan.AccountNumber = types.StringValue(project.AccountNumber)
-	plan.Client = types.Int64Value(int64(project.Client))
-	plan.Arn = types.StringValue(project.Arn)
-	plan.Bucket = types.StringValue(project.Bucket)
-	plan.ExternalID = types.StringValue(project.ExternalID)
-	plan.RoleName = types.StringValue(project.RoleName)
+	plan.Arn = state.Arn
+	plan.Bucket = state.Bucket
+	plan.Client = state.Client
+	plan.ExternalID = state.ExternalID
+	plan.RoleName = state.RoleName
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 
 	// Set refreshed state
