@@ -40,6 +40,8 @@ resource "nops_project" "test" {
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("nops_project.test", "name", "automated-testing-updated"),
 					resource.TestCheckResourceAttr("nops_project.test", "account_number", "471112641702"),
+					resource.TestCheckResourceAttr("nops_project.test", "master_payer_account_number", "580010171808"),
+					resource.TestCheckResourceAttr("nops_project.test", "role_name", "na"),
 				),
 			},
 		},
