@@ -41,3 +41,8 @@ type ResourceProperties struct {
 type IntegrationResponse struct {
 	Status string `json:"status"`
 }
+
+type ComputeCopilotOnboarding struct {
+	ClusterArns []string `json:"cluster_arns"`
+	RegionName  string   `json:"region_name"`
+}

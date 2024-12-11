@@ -187,3 +187,60 @@ func (c *Client) NotifyNops(payload Integration) (*IntegrationResponse, error) {
 
 	return &status, nil
 }
+
+func (c *Client) NotifyComputeCopilotOnboarding(payload ComputeCopilotOnboarding) error {
+	rb, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/svc/karpenter_manager/agents/terraform/onboarding-confirmation", c.HostURL), strings.NewReader(string(rb)))
+
+	if err != nil {
+		return err
+	}
+
+	_, err = c.doRequest(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Client) GetComputeCopilotOnboarding() (*ComputeCopilotOnboarding, error) {
+
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/svc/karpenter_manager/agents/terraform/onboarding-confirmation", c.HostURL), nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	body, err := c.doRequest(req)
+	if err != nil {
+		return nil, err
+	}
+
+	result := ComputeCopilotOnboarding{}
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+func (c *Client) DeleteComputeCopilotOnboarding() error {
+
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/svc/karpenter_manager/agents/terraform/onboarding", c.HostURL), nil)
+	if err != nil {
+		return err
+	}
+
+	_, err = c.doRequest(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
