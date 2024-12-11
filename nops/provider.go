@@ -170,5 +170,6 @@ func (p *nopsIntegrationProvider) Resources(_ context.Context) []func() resource
 	return []func() resource.Resource{
 		NewProjectResource,
 		NewProjectIntegrationResource,
+		computeCopilotResource,
 	}
 }
