@@ -45,4 +45,5 @@ type IntegrationResponse struct {
 type ComputeCopilotOnboarding struct {
 	ClusterArns []string `json:"cluster_arns"`
 	RegionName  string   `json:"region_name"`
+	Version     string   `json:"version"`
 }

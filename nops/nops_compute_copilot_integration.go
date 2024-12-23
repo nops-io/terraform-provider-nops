@@ -3,6 +3,7 @@ package nops
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -28,6 +29,7 @@ type computeCopilotIntegrationModel struct {
 	LastUpdated types.String `tfsdk:"last_updated"`
 	ClusterArns types.List   `tfsdk:"cluster_arns"`
 	RegionName  types.String `tfsdk:"region_name"`
+	Version     types.String `tfsdk:"version"`
 }
 
 // computeCopilotResource is a helper function to simplify the provider implementation.
@@ -81,6 +83,10 @@ func (r *computeCopilotIntegrationResource) Schema(_ context.Context, _ resource
 				Required:    true,
 				Description: "Name of the AWS region where the EKS clusters run.",
 			},
+			"version": schema.StringAttribute{
+				Required:    true,
+				Description: "Module version being applied.",
+			},
 		},
 	}
 }
@@ -104,6 +110,7 @@ func (r *computeCopilotIntegrationResource) Create(ctx context.Context, req reso
 	var integration ComputeCopilotOnboarding
 	integration.ClusterArns = cluster_arns
 	integration.RegionName = plan.RegionName.ValueString()
+	integration.Version = plan.Version.ValueString()
 	err := r.client.NotifyComputeCopilotOnboarding(integration)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -142,13 +149,30 @@ func (r *computeCopilotIntegrationResource) Read(ctx context.Context, req resour
 		return
 	}
 
-	// TODO add this back once we update the API to return the ARNs instead, this is OK for now
-	// listValue, diags := types.ListValueFrom(ctx, types.StringType, projects.ClusterArns)
-	// if diags.HasError() {
-	// 	return
-	// }
+	clusterArnsListValue, valueFromDiags := types.ListValueFrom(ctx, types.StringType, projects.ClusterArns)
+	if valueFromDiags.HasError() {
+		resp.Diagnostics.AddError(
+			"Error converting cluster_arns to list",
+			"Error converting cluster_arns to list",
+		)
+		return
+	}
 
-	// state.ClusterArns = listValue
+	clusterArns := make([]string, 0, len(state.ClusterArns.Elements()))
+	diags = state.ClusterArns.ElementsAs(ctx, &clusterArns, false)
+	if diags.HasError() {
+		return
+	}
+
+	// Required as the API might not return the list in the same order as its provided in the module, creating a permadiff.
+	sort.Strings(projects.ClusterArns)
+	sort.Strings(clusterArns)
+
+	if !equal(projects.ClusterArns, clusterArns) {
+		tflog.Debug(ctx, fmt.Sprintf("%s != %s", strings.Join(projects.ClusterArns, ","), strings.Join(clusterArns, ",")))
+		state.ClusterArns = clusterArnsListValue
+	}
+
 	state.RegionName = types.StringValue(projects.RegionName)
 	state.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 
@@ -171,16 +195,17 @@ func (r *computeCopilotIntegrationResource) Update(ctx context.Context, req reso
 		return
 	}
 
-	cluster_arns := make([]string, 0, len(plan.ClusterArns.Elements()))
-	diags = plan.ClusterArns.ElementsAs(ctx, &cluster_arns, false)
+	clusterArns := make([]string, 0, len(plan.ClusterArns.Elements()))
+	diags = plan.ClusterArns.ElementsAs(ctx, &clusterArns, false)
 	if diags.HasError() {
 		return
 	}
 
 	// Notify nOps with new values
 	var integration ComputeCopilotOnboarding
-	integration.ClusterArns = cluster_arns
+	integration.ClusterArns = clusterArns
 	integration.RegionName = plan.RegionName.ValueString()
+	integration.Version = plan.Version.ValueString()
 	err := r.client.NotifyComputeCopilotOnboarding(integration)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -202,7 +227,6 @@ func (r *computeCopilotIntegrationResource) Update(ctx context.Context, req reso
 
 // Delete deletes the resource and removes the Terraform state on success.
 func (r *computeCopilotIntegrationResource) Delete(ctx context.Context, req resource.DeleteRequest, resp *resource.DeleteResponse) {
-	// No current project delete API on the nOps platform, this is a manual process done in the nOps UI.
 	// Framework automatically removes resource from state, no action to be taken on that side.
 	var state computeCopilotIntegrationModel
 	diags := req.State.Get(ctx, &state)
