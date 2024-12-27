@@ -33,7 +33,9 @@ output "projects" {
 
 Read-Only:
 
+- `account_number` (String) AWS account number associated with the project
 - `arn` (String) AWS IAM role to create/update account integration to nOps
 - `bucket` (String) AWS S3 bucket name to be used for CUR reports
 - `client` (Number) nOps client identifier
 - `id` (Number) nOps project identifier
+- `name` (String) nOps project name
