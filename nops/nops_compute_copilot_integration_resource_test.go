@@ -16,6 +16,7 @@ func TestComputeCopilotIntegrationResource(t *testing.T) {
 resource "nops_compute_copilot_integration" "test" {
   cluster_arns = ["arn:aws:eks:us-west-2:844856862745:cluster/nOps-dev2"]
   region_name = "us-west-2"
+	version = "1.0.0"
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
@@ -24,6 +25,7 @@ resource "nops_compute_copilot_integration" "test" {
 					// Verify first order item
 					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "region_name", "us-west-2"),
 					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "cluster_arns.0", "arn:aws:eks:us-west-2:844856862745:cluster/nOps-dev2"),
+					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "version", "1.0.0"),
 				),
 			},
 			// Update and Read testing
@@ -32,11 +34,13 @@ resource "nops_compute_copilot_integration" "test" {
 resource "nops_compute_copilot_integration" "test" {
   cluster_arns = ["arn:aws:eks:us-west-2:844856862745:cluster/nOps-uat"]
   region_name = "us-west-2"
+	version = "1.0.0"
 }
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "region_name", "us-west-2"),
 					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "cluster_arns.0", "arn:aws:eks:us-west-2:844856862745:cluster/nOps-uat"),
+					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "version", "1.0.0"),
 				),
 			},
 		},
