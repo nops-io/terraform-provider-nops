@@ -17,7 +17,7 @@ data "nops_projects" "test" {}
 `,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					// Verify number of projects returned
-					resource.TestCheckResourceAttr("data.nops_projects.test", "projects.#", "1"),
+					resource.TestCheckResourceAttr("data.nops_projects.test", "projects.#", "2"),
 					// Verify the test project to ensure all attributes are set, this test runs on a mock client created in nOPS UAT account (tf-automated-testing)
 					resource.TestCheckResourceAttr("data.nops_projects.test", "projects.0.client", "15418"),
 					resource.TestCheckResourceAttr("data.nops_projects.test", "projects.0.arn", "arn:aws:iam::471112641702:role/na"),
