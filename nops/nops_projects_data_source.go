@@ -30,10 +30,12 @@ type projectsDataSourceModel struct {
 }
 
 type projectsModel struct {
-	ID     types.Int64  `tfsdk:"id"`
-	Client types.Int64  `tfsdk:"client"`
-	Arn    types.String `tfsdk:"arn"`
-	Bucket types.String `tfsdk:"bucket"`
+	ID            types.Int64  `tfsdk:"id"`
+	Client        types.Int64  `tfsdk:"client"`
+	Arn           types.String `tfsdk:"arn"`
+	Bucket        types.String `tfsdk:"bucket"`
+	Name          types.String `tfsdk:"name"`
+	AccountNumber types.String `tfsdk:"account_number"`
 }
 
 // Metadata returns the data source type name.
@@ -66,6 +68,14 @@ func (d *projectsDataSource) Schema(_ context.Context, _ datasource.SchemaReques
 							Computed:    true,
 							Description: "AWS S3 bucket name to be used for CUR reports",
 						},
+						"name": schema.StringAttribute{
+							Computed:    true,
+							Description: "nOps project name",
+						},
+						"account_number": schema.StringAttribute{
+							Computed:    true,
+							Description: "AWS account number associated with the project",
+						},
 					},
 				},
 			},
@@ -90,10 +100,12 @@ func (d *projectsDataSource) Read(ctx context.Context, req datasource.ReadReques
 		ctx = tflog.SetField(ctx, "project", project)
 		tflog.Debug(ctx, "Got project data")
 		projectState := projectsModel{
-			ID:     types.Int64Value(int64(project.ID)),
-			Client: types.Int64Value(int64(project.Client)),
-			Arn:    types.StringValue(project.Arn),
-			Bucket: types.StringValue(project.Bucket),
+			ID:            types.Int64Value(int64(project.ID)),
+			Client:        types.Int64Value(int64(project.Client)),
+			Arn:           types.StringValue(project.Arn),
+			Bucket:        types.StringValue(project.Bucket),
+			Name:          types.StringValue(project.Name),
+			AccountNumber: types.StringValue(project.AccountNumber),
 		}
 
 		state.Projects = append(state.Projects, projectState)

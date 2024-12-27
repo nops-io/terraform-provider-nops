@@ -19,6 +19,7 @@ Notifies the nOps platform a new cluster has been onboarded to nOps with the req
 
 - `cluster_arns` (List of String) List of EKS cluster arns to be onboarded.
 - `region_name` (String) Name of the AWS region where the EKS clusters run.
+- `version` (String) Module version being applied.
 
 ### Read-Only
 
