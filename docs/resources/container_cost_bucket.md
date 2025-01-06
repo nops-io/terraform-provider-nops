@@ -21,4 +21,8 @@ Notifies the nOps platform a new container cost bucket was created for the backe
 
 ### Read-Only
 
+- `bucket` (String) AWS bucket name associate with this integration.
+- `id` (Number) Timestamp when the resource was last updated.
 - `last_updated` (String) Timestamp when the resource was last updated.
+- `region` (String) AWS region where the bucket resides.
+- `status` (String) nOps Container Cost Bucket integration status.
