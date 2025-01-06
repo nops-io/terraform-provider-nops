@@ -47,3 +47,15 @@ type ComputeCopilotOnboarding struct {
 	RegionName  string   `json:"region_name"`
 	Version     string   `json:"version"`
 }
+
+type ContainerCostBucketSetup struct {
+	Project int64 `json:"project"`
+}
+
+type ContainerCostBucket struct {
+	ID      int64  `json:"id"`
+	Project int64  `json:"project"`
+	Bucket  string `json:"bucket"`
+	Region  string `json:"region"`
+	Status  string `json:"status"`
+}
