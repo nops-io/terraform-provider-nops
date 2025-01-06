@@ -171,5 +171,6 @@ func (p *nopsIntegrationProvider) Resources(_ context.Context) []func() resource
 		NewProjectResource,
 		NewProjectIntegrationResource,
 		computeCopilotResource,
+		containerCostResource,
 	}
 }
