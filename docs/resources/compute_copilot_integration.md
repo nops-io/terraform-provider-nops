@@ -17,6 +17,7 @@ Notifies the nOps platform a new cluster has been onboarded to nOps with the req
 
 ### Required
 
+- `account_id` (String) nOps account ID associated with the AWS account where the clusters are hosted.
 - `cluster_arns` (List of String) List of EKS cluster arns to be onboarded.
 - `region_name` (String) Name of the AWS region where the EKS clusters run.
 - `version` (String) Module version being applied.

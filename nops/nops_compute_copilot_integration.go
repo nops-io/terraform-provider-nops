@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -30,6 +29,7 @@ type computeCopilotIntegrationModel struct {
 	ClusterArns types.List   `tfsdk:"cluster_arns"`
 	RegionName  types.String `tfsdk:"region_name"`
 	Version     types.String `tfsdk:"version"`
+	AccountID   types.String `tfsdk:"account_id"`
 }
 
 // computeCopilotResource is a helper function to simplify the provider implementation.
@@ -87,6 +87,10 @@ func (r *computeCopilotIntegrationResource) Schema(_ context.Context, _ resource
 				Required:    true,
 				Description: "Module version being applied.",
 			},
+			"account_id": schema.StringAttribute{
+				Required:    true,
+				Description: "nOps account ID associated with the AWS account where the clusters are hosted.",
+			},
 		},
 	}
 }
@@ -111,6 +115,7 @@ func (r *computeCopilotIntegrationResource) Create(ctx context.Context, req reso
 	integration.ClusterArns = cluster_arns
 	integration.RegionName = plan.RegionName.ValueString()
 	integration.Version = plan.Version.ValueString()
+	integration.AccountID = plan.AccountID.ValueString()
 	err := r.client.NotifyComputeCopilotOnboarding(integration)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -140,7 +145,7 @@ func (r *computeCopilotIntegrationResource) Read(ctx context.Context, req resour
 		return
 	}
 
-	projects, err := r.client.GetComputeCopilotOnboarding()
+	onboarding, err := r.client.GetComputeCopilotOnboarding(state.RegionName.ValueString(), state.AccountID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error getting remote compute copilot onboarding data",
@@ -149,7 +154,7 @@ func (r *computeCopilotIntegrationResource) Read(ctx context.Context, req resour
 		return
 	}
 
-	clusterArnsListValue, valueFromDiags := types.ListValueFrom(ctx, types.StringType, projects.ClusterArns)
+	clusterArnsListValue, valueFromDiags := types.ListValueFrom(ctx, types.StringType, onboarding.ClusterArns)
 	if valueFromDiags.HasError() {
 		resp.Diagnostics.AddError(
 			"Error converting cluster_arns to list",
@@ -165,18 +170,14 @@ func (r *computeCopilotIntegrationResource) Read(ctx context.Context, req resour
 	}
 
 	// Required as the API might not return the list in the same order as its provided in the module, creating a permadiff.
-	sort.Strings(projects.ClusterArns)
+	sort.Strings(onboarding.ClusterArns)
 	sort.Strings(clusterArns)
 
-	if !equal(projects.ClusterArns, clusterArns) {
-		tflog.Debug(ctx, fmt.Sprintf("%s != %s", strings.Join(projects.ClusterArns, ","), strings.Join(clusterArns, ",")))
+	if !equal(onboarding.ClusterArns, clusterArns) {
+		tflog.Debug(ctx, fmt.Sprintf("%s != %s", strings.Join(onboarding.ClusterArns, ","), strings.Join(clusterArns, ",")))
 		state.ClusterArns = clusterArnsListValue
 	}
-
-	state.RegionName = types.StringValue(projects.RegionName)
-	state.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
-
-	tflog.Debug(ctx, "Upstream compute copilot integration project data received for clusters "+strings.Join(projects.ClusterArns, ",")+" region: "+projects.RegionName)
+	tflog.Debug(ctx, "Upstream compute copilot integration project data received for clusters "+strings.Join(onboarding.ClusterArns, ",")+" region: "+onboarding.RegionName)
 
 	// Set refreshed state
 	diags = resp.State.Set(ctx, &state)
@@ -206,6 +207,7 @@ func (r *computeCopilotIntegrationResource) Update(ctx context.Context, req reso
 	integration.ClusterArns = clusterArns
 	integration.RegionName = plan.RegionName.ValueString()
 	integration.Version = plan.Version.ValueString()
+	integration.AccountID = plan.AccountID.ValueString()
 	err := r.client.NotifyComputeCopilotOnboarding(integration)
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -215,7 +217,6 @@ func (r *computeCopilotIntegrationResource) Update(ctx context.Context, req reso
 		return
 	}
 
-	// Set state to fully populated data
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
 	diags = resp.State.Set(ctx, plan)
 	resp.Diagnostics.Append(diags...)
@@ -235,7 +236,7 @@ func (r *computeCopilotIntegrationResource) Delete(ctx context.Context, req reso
 		return
 	}
 
-	err := r.client.DeleteComputeCopilotOnboarding()
+	err := r.client.DeleteComputeCopilotOnboarding(state.RegionName.ValueString(), state.AccountID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting project",
@@ -245,7 +246,7 @@ func (r *computeCopilotIntegrationResource) Delete(ctx context.Context, req reso
 	}
 }
 
-func (r *computeCopilotIntegrationResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
-	// Capability to import existing cc onboarding already integrated in the nOps platform into the TF state without recreation.
-	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("region_name"), req.ID)...)
-}
+// func (r *computeCopilotIntegrationResource) ImportState(ctx context.Context, req resource.ImportStateRequest, resp *resource.ImportStateResponse) {
+// 	// Capability to import existing cc onboarding already integrated in the nOps platform into the TF state without recreation.
+// 	resp.Diagnostics.Append(resp.State.SetAttribute(ctx, path.Root("region_name"), req.ID)...)
+// }
