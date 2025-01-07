@@ -46,6 +46,7 @@ type ComputeCopilotOnboarding struct {
 	ClusterArns []string `json:"cluster_arns"`
 	RegionName  string   `json:"region_name"`
 	Version     string   `json:"version"`
+	AccountID   string   `json:"account_id"`
 }
 
 type ContainerCostBucketSetup struct {

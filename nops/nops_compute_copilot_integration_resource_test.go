@@ -18,6 +18,7 @@ resource "nops_compute_copilot_integration" "test" {
   cluster_arns = ["arn:aws:eks:us-west-2:844856862745:cluster/nOps-dev2", "arn:aws:eks:us-west-2:844856862745:cluster/nOps-uat", "arn:aws:eks:us-west-2:844856862745:cluster/uat-compute-copilot-testing"]
   region_name = "us-west-2"
 	version = "1.0.0"
+	account_id = 1
 }
 `,
 
@@ -29,6 +30,7 @@ resource "nops_compute_copilot_integration" "test" {
 					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "cluster_arns.0", "arn:aws:eks:us-west-2:844856862745:cluster/nOps-dev2"),
 					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "cluster_arns.1", "arn:aws:eks:us-west-2:844856862745:cluster/nOps-uat"),
 					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "version", "1.0.0"),
+					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "account_id", "1"),
 				),
 				ConfigPlanChecks: resource.ConfigPlanChecks{
 					PreApply: []plancheck.PlanCheck{
@@ -43,6 +45,7 @@ resource "nops_compute_copilot_integration" "test" {
 				cluster_arns = ["arn:aws:eks:us-west-2:844856862745:cluster/nOps-dev2", "arn:aws:eks:us-west-2:844856862745:cluster/nOps-uat", "arn:aws:eks:us-west-2:844856862745:cluster/uat-compute-copilot-testing"]
 				region_name = "us-west-2"
 				version = "1.0.0"
+				account_id = 1
 			}
 			`,
 				ConfigPlanChecks: resource.ConfigPlanChecks{
@@ -54,6 +57,7 @@ resource "nops_compute_copilot_integration" "test" {
 					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "region_name", "us-west-2"),
 					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "cluster_arns.0", "arn:aws:eks:us-west-2:844856862745:cluster/nOps-dev2"),
 					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "version", "1.0.0"),
+					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "account_id", "1"),
 				),
 			},
 		},

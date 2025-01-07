@@ -208,13 +208,18 @@ func (c *Client) NotifyComputeCopilotOnboarding(payload ComputeCopilotOnboarding
 	return nil
 }
 
-func (c *Client) GetComputeCopilotOnboarding() (*ComputeCopilotOnboarding, error) {
+func (c *Client) GetComputeCopilotOnboarding(regionName string, accountId string) (*ComputeCopilotOnboarding, error) {
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/svc/karpenter_manager/agents/terraform/onboarding-confirmation", c.HostURL), nil)
 
 	if err != nil {
 		return nil, err
 	}
+
+	q := req.URL.Query()
+	q.Add("region_name", regionName)
+	q.Add("account_id", accountId)
+	req.URL.RawQuery = q.Encode()
 
 	body, err := c.doRequest(req)
 	if err != nil {
@@ -230,12 +235,17 @@ func (c *Client) GetComputeCopilotOnboarding() (*ComputeCopilotOnboarding, error
 	return &result, nil
 }
 
-func (c *Client) DeleteComputeCopilotOnboarding() error {
+func (c *Client) DeleteComputeCopilotOnboarding(regionName string, accountId string) error {
 
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/svc/karpenter_manager/agents/terraform/onboarding", c.HostURL), nil)
 	if err != nil {
 		return err
 	}
+
+	q := req.URL.Query()
+	q.Add("region_name", regionName)
+	q.Add("account_id", accountId)
+	req.URL.RawQuery = q.Encode()
 
 	_, err = c.doRequest(req)
 	if err != nil {
