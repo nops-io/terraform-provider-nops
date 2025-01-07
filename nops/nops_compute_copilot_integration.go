@@ -89,7 +89,7 @@ func (r *computeCopilotIntegrationResource) Schema(_ context.Context, _ resource
 			},
 			"account_id": schema.StringAttribute{
 				Required:    true,
-				Description: "AWS account ID.",
+				Description: "nOps account ID associated with the AWS account where the clusters are hosted.",
 			},
 		},
 	}
