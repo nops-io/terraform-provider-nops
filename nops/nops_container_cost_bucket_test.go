@@ -20,9 +20,9 @@ resource "nops_container_cost_bucket" "test" {
 `,
 
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "bucket", "nops-container-cost-844856862745"),
-					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "region", "us-east-1"),
-					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "project", "23986"),
+					resource.TestCheckResourceAttr("nops_container_cost_bucket.test", "bucket", "nops-container-cost-844856862745"),
+					resource.TestCheckResourceAttr("nops_container_cost_bucket.test", "region", "us-east-1"),
+					resource.TestCheckResourceAttr("nops_container_cost_bucket.test", "project", "23986"),
 				),
 				ConfigPlanChecks: resource.ConfigPlanChecks{
 					PreApply: []plancheck.PlanCheck{
@@ -43,9 +43,9 @@ resource "nops_container_cost_bucket" "test" {
 					},
 				},
 				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "bucket", "nops-container-cost-844856862745"),
-					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "region", "us-east-1"),
-					resource.TestCheckResourceAttr("nops_compute_copilot_integration.test", "project", "23986"),
+					resource.TestCheckResourceAttr("nops_container_cost_bucket.test", "bucket", "nops-container-cost-844856862745"),
+					resource.TestCheckResourceAttr("nops_container_cost_bucket.test", "region", "us-east-1"),
+					resource.TestCheckResourceAttr("nops_container_cost_bucket.test", "project", "23986"),
 				),
 			},
 		},

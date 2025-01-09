@@ -73,7 +73,7 @@ func (r *containerCostBucketResource) Schema(_ context.Context, _ resource.Schem
 		Attributes: map[string]schema.Attribute{
 			"id": schema.Int64Attribute{
 				Computed:    true,
-				Description: "Timestamp when the resource was last updated.",
+				Description: "Container Cost Bucket ID.",
 			},
 			"project_id": schema.Int64Attribute{
 				Required:    true,
