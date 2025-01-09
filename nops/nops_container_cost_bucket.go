@@ -3,15 +3,10 @@ package nops
 import (
 	"context"
 	"fmt"
-<<<<<<< HEAD
-	"time"
-
-=======
 	"strconv"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-framework/path"
->>>>>>> 78d3963 (feat: adding container cost bucket resource)
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -30,17 +25,12 @@ type containerCostBucketResource struct {
 }
 
 type containerCostBucketModel struct {
-<<<<<<< HEAD
-	LastUpdated types.String `tfsdk:"last_updated"`
-	ProjectId   types.Int64  `tfsdk:"project_id"`
-=======
 	ID          types.Int64  `tfsdk:"id"`
 	LastUpdated types.String `tfsdk:"last_updated"`
 	ProjectId   types.Int64  `tfsdk:"project_id"`
 	Status      types.String `tfsdk:"status"`
 	Region      types.String `tfsdk:"region"`
 	Bucket      types.String `tfsdk:"bucket"`
->>>>>>> 78d3963 (feat: adding container cost bucket resource)
 }
 
 // computeCopilotResource is a helper function to simplify the provider implementation.
@@ -81,13 +71,10 @@ func (r *containerCostBucketResource) Schema(_ context.Context, _ resource.Schem
 		Description: "Notifies the nOps platform a new container cost bucket was created for the backend to fetch metadata from it." +
 			" This resource is mostly used only for secure connection with nOps APIs.",
 		Attributes: map[string]schema.Attribute{
-<<<<<<< HEAD
-=======
 			"id": schema.Int64Attribute{
 				Computed:    true,
 				Description: "Timestamp when the resource was last updated.",
 			},
->>>>>>> 78d3963 (feat: adding container cost bucket resource)
 			"project_id": schema.Int64Attribute{
 				Required:    true,
 				Description: "nOps project ID.",
@@ -96,8 +83,6 @@ func (r *containerCostBucketResource) Schema(_ context.Context, _ resource.Schem
 				Computed:    true,
 				Description: "Timestamp when the resource was last updated.",
 			},
-<<<<<<< HEAD
-=======
 			"bucket": schema.StringAttribute{
 				Computed:    true,
 				Description: "AWS bucket name associate with this integration.",
@@ -110,7 +95,6 @@ func (r *containerCostBucketResource) Schema(_ context.Context, _ resource.Schem
 				Computed:    true,
 				Description: "nOps Container Cost Bucket integration status.",
 			},
->>>>>>> 78d3963 (feat: adding container cost bucket resource)
 		},
 	}
 }
